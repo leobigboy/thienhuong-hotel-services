@@ -1,0 +1,41 @@
+{
+    "name": "Node.js & PostgreSQL",
+    "dockerComposeFile": "docker-compose.yml", // Sử dụng docker-compose để chạy cả app và DB
+    "service": "app", // Tên service chính trong docker-compose.yml
+    "workspaceFolder": "/workspace", // Thư mục làm việc trong container
+    // Cài đặt sẵn Node.js (chọn phiên bản LTS)
+    "features": {
+      "ghcr.io/devcontainers/features/node:1": {
+        "version": "lts"
+      }
+    },
+    // Tự động forward các port cần thiết
+    "forwardPorts": [
+      3000, // Port frontend (Vite default)
+      4000, // Port backend (API)
+      5432  // Port PostgreSQL
+     ],
+    // Chạy sau khi container được tạo (cài pnpm và install dependencies gốc)
+    "postCreateCommand": "npm install -g pnpm && pnpm install",
+    // Tùy chỉnh VS Code trong Codespace
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "dbaeumer.vscode-eslint",     // Linting JavaScript/TypeScript
+          "esbenp.prettier-vscode",     // Code Formatter
+          "prisma.prisma",            // Hỗ trợ syntax và autocompletion cho Prisma
+          "apollographql.vscode-apollo",// Hỗ trợ GraphQL
+          "ms-azuretools.vscode-docker", // Hỗ trợ Docker
+          "humao.rest-client"        // Gửi HTTP request (test API)
+        ],
+         "settings": {
+            "editor.formatOnSave": true, // Tự động format code khi lưu
+            "[prisma]": {
+                "editor.formatOnSave": true
+            }
+        }
+      }
+    },
+    // Chạy container với user không phải root
+    "remoteUser": "node"
+  }

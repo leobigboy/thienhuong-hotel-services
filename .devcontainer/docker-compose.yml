@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  # Service cho ứng dụng Node.js (Backend/Frontend build)
+  app:
+    # Sử dụng image Node.js chuẩn
+    image: mcr.microsoft.com/devcontainers/javascript-node:0-18 # Hoặc phiên bản bạn muốn
+    volumes:
+      # Mount code từ máy host vào container
+      - ..:/workspace:cached
+    # Giữ container chạy để có thể attach VS Code vào
+    command: sleep infinity
+    # Khai báo biến môi trường nếu cần (ví dụ: cho Prisma)
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/hoteldb?schema=public # Kết nối tới service 'db'
+      JWT_SECRET: your-very-strong-jwt-secret-key # Thay bằng key bí mật thực tế
+      NODE_ENV: development
+    # Phụ thuộc vào service 'db' phải chạy trước
+    depends_on:
+      - db
+
+  # Service cho PostgreSQL Database
+  db:
+    image: postgres:15 # Sử dụng image PostgreSQL phiên bản 15
+    restart: unless-stopped # Tự khởi động lại nếu bị dừng
+    volumes:
+      # Lưu trữ dữ liệu database persistent trong volume
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      # Cấu hình user, password, database cho PostgreSQL
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hoteldb
+    ports:
+       # Map port 5432 của container ra ngoài (để có thể truy cập nếu cần)
+      - "5432:5432"
+
+volumes:
+  # Khai báo volume để lưu dữ liệu PostgreSQL
+  postgres-data:
